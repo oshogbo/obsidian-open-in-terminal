@@ -1,0 +1,10 @@
+{
+  "id": "reveal-in-terminal",
+  "name": "Reveal in Terminal",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "Reveal the vault, folders, or a note's parent folder in your preferred terminal.",
+  "author": "Mariusz Zaborski",
+  "authorUrl": "https://github.com/oshogbo",
+  "isDesktopOnly": true
+}
