@@ -82,15 +82,21 @@ const TERMINALS: TerminalDefinition[] = [
 	},
 ];
 
+type Placement = "system" | "own";
+
 interface OpenInTerminalSettings {
 	terminal: TerminalId;
 	customCommand: string;
+	placement: Placement;
 }
 
 const DEFAULT_SETTINGS: OpenInTerminalSettings = {
 	terminal: "terminal",
 	customCommand: "",
+	placement: "system",
 };
+
+const OWN_SECTION = "reveal-in-terminal";
 
 export default class OpenInTerminalPlugin extends Plugin {
 	settings: OpenInTerminalSettings = DEFAULT_SETTINGS;
@@ -123,8 +129,10 @@ export default class OpenInTerminalPlugin extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on("file-menu", (menu, file) => {
 				menu.addItem((item) => {
-					item.setTitle("Reveal in terminal")
+					item
+						.setTitle("Reveal in terminal")
 						.setIcon("terminal-square")
+						.setSection(this.menuSection())
 						.onClick(() => this.revealFile(file));
 				});
 			})
@@ -137,8 +145,10 @@ export default class OpenInTerminalPlugin extends Plugin {
 				);
 				if (targets.length === 0) return;
 				menu.addItem((item) => {
-					item.setTitle("Reveal in terminal")
+					item
+						.setTitle("Reveal in terminal")
 						.setIcon("terminal-square")
+						.setSection(this.menuSection())
 						.onClick(() => {
 							const folders = new Set<string>();
 							for (const t of targets) {
@@ -164,6 +174,10 @@ export default class OpenInTerminalPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	private menuSection(): string {
+		return this.settings.placement === "own" ? OWN_SECTION : "system";
 	}
 
 	private getVaultPath(): string | null {
@@ -235,6 +249,24 @@ class OpenInTerminalSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 					this.display();
 				});
+			});
+
+		new Setting(containerEl)
+			.setName("Menu placement")
+			.setDesc(
+				"Where the Reveal in terminal entry sits in the file context menu. " +
+					"Next to Reveal in Finder groups it with system actions; " +
+					"separate puts it in its own section with its own divider."
+			)
+			.addDropdown((drop) => {
+				drop
+					.addOption("system", "Next to Reveal in Finder")
+					.addOption("own", "In its own section")
+					.setValue(this.plugin.settings.placement)
+					.onChange(async (value) => {
+						this.plugin.settings.placement = value as Placement;
+						await this.plugin.saveSettings();
+					});
 			});
 
 		if (this.plugin.settings.terminal === "custom") {

@@ -55,6 +55,8 @@ plugin directory into your vault to pick changes up live.
 Open **Settings → Reveal in Terminal**:
 
 - **Terminal** — choose the emulator to launch.
+- **Menu placement** — *Next to Reveal in Finder* (default, groups with the
+  system actions) or *In its own section* (separate divider).
 - **Custom command** (shown when *Custom command* is selected) — any shell
   command. Use `{folder}` as a placeholder for the absolute folder path; if
   omitted, the path is appended to the end of the command.
